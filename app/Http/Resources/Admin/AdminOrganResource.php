@@ -15,8 +15,8 @@ class AdminOrganResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'name' => $this['name'],
-            'organType' => $this['organ_type'],
+            'name' => $this->name,
+            'organType' => $this->organ_type,
         ];
     }
 }

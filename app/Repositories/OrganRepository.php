@@ -33,11 +33,11 @@ class OrganRepository extends BaseRepository
   public function store(array $data): void
   {
     try {
-      Organ::create($data);
+      $organ = Organ::create($data);
 
       $this->setStatus(true);
       $this->setStatusCode(Response::HTTP_CREATED);
-      $this->setData($data);
+      $this->setData($organ);
     } catch (\Exception $e) {
       $this->setStatus(false);
       $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
