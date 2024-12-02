@@ -7,6 +7,7 @@ use App\Http\Requests\AddressUpdateRequest;
 use App\Http\Resources\Address\AddressResource;
 use App\Repositories\AddressRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class AddressController extends ApiController
 {
@@ -14,7 +15,7 @@ class AddressController extends ApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
         $addresses = $this->addressRepository->findAll();
 
