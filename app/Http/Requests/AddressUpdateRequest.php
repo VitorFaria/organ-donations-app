@@ -44,10 +44,12 @@ class AddressUpdateRequest extends FormRequest
 
     public function prepareForValidation()
     {
-        $zipCodeWithoutHyphen = str_replace('-', '', $this->zip_code);
-
-        $this->merge([
-            'zip_code' => $zipCodeWithoutHyphen
-        ]);
+        if (!empty($this->zip_code)) {
+            $zipCodeWithoutHyphen = str_replace('-', '', $this->zip_code);
+    
+            $this->merge([
+                'zip_code' => $zipCodeWithoutHyphen
+            ]);
+        }
     }
 }
