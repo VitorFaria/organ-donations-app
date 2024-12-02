@@ -6,7 +6,7 @@ use App\Http\Resources\Address\AddressResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class HospitalResource extends JsonResource
+class AdminHospitalResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

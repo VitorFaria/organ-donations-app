@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Api\Admin\AdminAuthController;
+use App\Http\Controllers\Api\Admin\AdminHospitalController;
 use App\Http\Controllers\Api\Admin\AdminOrganController;
-use App\Http\Controllers\Api\Admin\HospitalController;
 use App\Http\Middleware\CheckRoleBeforeAction;
 use Illuminate\Support\Facades\Route;
 
@@ -31,10 +31,10 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::prefix('hospitals')->group(function() {
-      Route::get('', [HospitalController::class, 'index']);
-      Route::get('/{id}', [HospitalController::class, 'show']);
-      Route::post('', [HospitalController::class, 'store']);
-      Route::patch('/{id}', [HospitalController::class, 'update']);
+      Route::get('', [AdminHospitalController::class, 'index']);
+      Route::get('/{id}', [AdminHospitalController::class, 'show']);
+      Route::post('', [AdminHospitalController::class, 'store']);
+      Route::patch('/{id}', [AdminHospitalController::class, 'update']);
     });
   });
 });
