@@ -2,10 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Models\Address;
 use App\Models\Hospital;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class HospitalRepository extends BaseRepository
 {
@@ -57,7 +57,8 @@ class HospitalRepository extends BaseRepository
 
   public function findAll(): LengthAwarePaginator
   {
-    $hospitals = Hospital::with('address')
+    $hospitals = Hospital::where('status', true)
+      ->with('address')
       ->orderBy('name', 'ASC')
       ->paginate(10);
 
@@ -97,6 +98,31 @@ class HospitalRepository extends BaseRepository
       $this->setStatus(false);
       $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
       $this->setErrorMessage("Não foi possível atualizar este hospital");
+    }
+  }
+
+  public function chooseHospitals(array $hospitalArr): void
+  {
+    try {
+      $hospitalIds = array_column($hospitalArr['hospitals'], 'id');
+      $patient = Auth::user()->patient()->first();
+
+      if (empty($patient)) {
+        $this->setStatus(false);
+        $this->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->setErrorMessage("Dados de paciente não encontrados para atrelar ao hospital.");
+
+        return;
+      }
+
+      $patient->hospitals()->sync($hospitalIds);
+      $this->setStatus(true);
+      $this->setStatusCode(Response::HTTP_CREATED);
+      $this->setData($patient);
+    } catch (\Exception $e) {
+      $this->setStatus(false);
+      $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+      $this->setErrorMessage("Não foi selecionar os hospitais.");
     }
   }
 }
