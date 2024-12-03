@@ -3,8 +3,10 @@
 namespace App\Repositories;
 
 use App\Models\Organ;
+use App\Models\Patient;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class OrganRepository extends BaseRepository
 {
@@ -63,5 +65,45 @@ class OrganRepository extends BaseRepository
       $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
       $this->setErrorMessage("Não foi possível atualizar este orgão");
     }
+  }
+
+  public function chooseOrgans(array $organArr): void
+  {
+    try {
+      $patient = Auth::user()->patient()->first();
+
+      if (empty($patient)) {
+        $this->setStatus(false);
+        $this->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->setErrorMessage("Dados de orgão não encontrados para atrelar.");
+
+        return;
+      }
+
+      $patient = $this->attachDetachOrgans($patient, $organArr['organs']);
+
+      $this->setStatus(true);
+      $this->setStatusCode(Response::HTTP_CREATED);
+      $this->setData($patient);
+    } catch (\Exception $e) {
+      $this->setStatus(false);
+      $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+      $this->setErrorMessage("Não foi selecionar os orgãos.");
+    }
+  }
+
+  private function attachDetachOrgans(Patient $patient, array $organArr): Patient
+  {
+    if (!empty($organArr['disconnect'])) {
+      $disconnectItems = array_column($organArr['disconnect'], 'id');
+      $patient->organs()->sync($disconnectItems);
+    }
+
+    if (!empty(['connect'])) {
+      $connectItems = array_column($organArr['connect'], 'id');
+      $patient->organs()->attach($connectItems);
+    }
+
+    return $patient;
   }
 }
