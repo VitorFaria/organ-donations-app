@@ -23,7 +23,8 @@ class HospitalChooseRequest extends FormRequest
     {
         return [
             'hospitals' => 'required|array',
-            'hospitals.*.id' => 'required|string|exists:hospitals,id'
+            'hospitals.*.connect.*.id' => 'nullable|string|exists:hospitals,id',
+            'hospitals.*.disconnect.*.id' => 'nullable|string|exists:hospitals,id'
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Hospital;
+use App\Models\Patient;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -104,7 +105,6 @@ class HospitalRepository extends BaseRepository
   public function chooseHospitals(array $hospitalArr): void
   {
     try {
-      $hospitalIds = array_column($hospitalArr['hospitals'], 'id');
       $patient = Auth::user()->patient()->first();
 
       if (empty($patient)) {
@@ -115,7 +115,7 @@ class HospitalRepository extends BaseRepository
         return;
       }
 
-      $patient->hospitals()->sync($hospitalIds);
+      $patient = $this->attachDetachItems($patient, $hospitalArr['hospitals']);
       $this->setStatus(true);
       $this->setStatusCode(Response::HTTP_CREATED);
       $this->setData($patient);
@@ -124,5 +124,20 @@ class HospitalRepository extends BaseRepository
       $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
       $this->setErrorMessage("Não foi selecionar os hospitais.");
     }
+  }
+
+  private function attachDetachItems(Patient $patient, array $hospitalArr): Patient
+  {
+    if (!empty($hospitalArr['disconnect'])) {
+      $disconnectItems = array_column($hospitalArr['disconnect'], 'id');
+      $patient->hospitals()->detach($disconnectItems);
+    }
+
+    if (!empty(['connect'])) {
+      $connectItems = array_column($hospitalArr['connect'], 'id');
+      $patient->hospitals()->attach($connectItems);
+    }
+
+    return $patient;
   }
 }
