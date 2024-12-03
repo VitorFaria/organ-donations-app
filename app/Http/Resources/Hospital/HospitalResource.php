@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Resources\Admin;
+namespace App\Http\Resources\Hospital;
 
 use App\Http\Resources\Address\AddressResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AdminHospitalResource extends JsonResource
+class HospitalResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
