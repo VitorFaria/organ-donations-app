@@ -90,11 +90,10 @@ class UserRepository extends BaseRepository
     }
   }
 
-  public function findUserByEmailAndRole(string $email, string $role): ?User
+  public function findUserByEmail(string $email): ?User
   {
     try {
       $user = User::where('email', $email)
-        ->where('role', $role)
         ->where('is_active', true)
         ->first();
 

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\Role;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\User\UserMeResource;
@@ -17,7 +16,7 @@ class AuthController extends ApiController
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $this->userRepository->findUserByEmailAndRole($request->email, Role::USER->value);
+        $this->userRepository->findUserByEmail($request->email);
 
         if (!$this->userRepository->getStatus()) {
             return $this->errorResponse(
@@ -54,7 +53,7 @@ class AuthController extends ApiController
         return $this->successResponse("Usuário deslogado com sucesso", Response::HTTP_OK);
     }
 
-    public function me()
+    public function me(): JsonResponse
     {
         $user = Auth::user();
 
