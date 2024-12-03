@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Hash;
 
 class UserRepository extends BaseRepository
 {
+  public function __construct(private PatientRepository $patientRepository){}
+
   public function storeUserByAdmin(array $data): void
   {
     DB::beginTransaction();
@@ -59,7 +61,7 @@ class UserRepository extends BaseRepository
       $user->fill($userArr);
       $user->save();
 
-      $patient = $this->findPatient($user->id);
+      $patient = $this->patientRepository->findPatient($user->id);
 
       if (!empty($data['patient_type']))
         $patient->patient_type = $data['patient_type'];
@@ -157,13 +159,5 @@ class UserRepository extends BaseRepository
    
     $this->setStatus(true);
     return $user;
-  }
-
-  public function findPatient(string $userId): Patient
-  {
-    $user = User::find($userId);
-    $patient = $user->patient()->first();
-
-    return $patient;
   }
 }
