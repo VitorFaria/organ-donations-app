@@ -2,24 +2,43 @@
 
 namespace App\Repositories;
 
+use App\Enums\Role;
 use App\Models\Address;
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AddressRepository extends BaseRepository
 {
   public function store(array $data): void
   {
+    DB::beginTransaction();
     try {
       $address = Address::create($data);
+
+      $this->checkBeforeBeforeAttachingAddress(Auth::user(), $address->id);
 
       $this->setStatus(true);
       $this->setData($address);
       $this->setStatus(Response::HTTP_CREATED);
+
+      DB::commit();
     } catch (\Exception $e) {
+      DB::rollBack();
       $this->setStatus(false);
       $this->setErrorMessage("Não foi possível salvar dados deste endereço");
       $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public function checkBeforeBeforeAttachingAddress(User $user, string $addressId): void
+  {
+    if ($user->role == Role::USER->value) {
+      $patient = $user->patient()->first();
+      $patient->address_id = $addressId;
+      $patient->save();
     }
   }
 
@@ -53,14 +72,30 @@ class AddressRepository extends BaseRepository
 
   public function findAddress(string $id): ?Address
   {
-    $address = Address::find($id);
+    $user = Auth::user();
 
-    if (empty($address)) {
-      $this->setStatus(false);
-      $this->setStatusCode(Response::HTTP_NOT_FOUND);
-      $this->setErrorMessage("Endereço não encontrado");
+    if ($user->role == Role::USER->value) {
+      $patientAddress = $user->patient()->first()->address()->first();
 
-      return null;
+      if (empty($patientAddress)) {
+        $this->setStatus(false);
+        $this->setStatusCode(Response::HTTP_NOT_FOUND);
+        $this->setErrorMessage("Endereço não encontrado");
+        return null;
+      }
+
+      $address = $patientAddress;
+    }
+    else {
+      $address = Address::find($id);
+  
+      if (empty($address)) {
+        $this->setStatus(false);
+        $this->setStatusCode(Response::HTTP_NOT_FOUND);
+        $this->setErrorMessage("Endereço não encontrado");
+  
+        return null;
+      }
     }
 
     $this->setStatus(true);
