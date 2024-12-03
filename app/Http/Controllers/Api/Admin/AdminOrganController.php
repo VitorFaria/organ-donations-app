@@ -7,6 +7,8 @@ use App\Http\Requests\Admin\AdminOrganStoreRequest;
 use App\Http\Requests\Admin\AdminOrganUpdateRequest;
 use App\Http\Resources\Admin\AdminOrganResource;
 use App\Repositories\OrganRepository;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class AdminOrganController extends ApiController
 {
@@ -14,7 +16,7 @@ class AdminOrganController extends ApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
         $organs = $this->organRepository->findAll();
 
@@ -24,7 +26,7 @@ class AdminOrganController extends ApiController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AdminOrganStoreRequest $request)
+    public function store(AdminOrganStoreRequest $request): JsonResponse
     {
         $this->organRepository->store($request->validated());
 
@@ -41,7 +43,7 @@ class AdminOrganController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
         $organ = $this->organRepository->findOrgan($id);
 
@@ -58,7 +60,7 @@ class AdminOrganController extends ApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(AdminOrganUpdateRequest $request, string $id)
+    public function update(AdminOrganUpdateRequest $request, string $id): JsonResponse
     {
         $this->organRepository->update($id, $request->validated());
 
