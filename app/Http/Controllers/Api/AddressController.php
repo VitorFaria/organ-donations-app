@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\ApiController;
 use App\Http\Requests\AddressStoreRequest;
 use App\Http\Requests\AddressUpdateRequest;
 use App\Http\Resources\Address\AddressResource;
