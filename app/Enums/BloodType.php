@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Enums;
+
 enum BloodType: string
 {
   case A_BLOOD = 'A';
