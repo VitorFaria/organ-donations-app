@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Enums\Role;
 use App\Http\Controllers\ApiController;
-use App\Http\Requests\Admin\AdminLoginRequest;
-use App\Http\Resources\Admin\AdminMeResource;
+use App\Http\Requests\LoginRequest;
+use App\Http\Resources\User\UserMeResource;
 use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -14,9 +15,9 @@ class AdminAuthController extends ApiController
 {
     public function __construct(private UserRepository $userRepository){}
 
-    public function login(AdminLoginRequest $request): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
-        $this->userRepository->findUserByEmailAndRole($request->email, 'admin');
+        $this->userRepository->findUserByEmailAndRole($request->email, Role::ADMIN->value);
 
         if (!$this->userRepository->getStatus()) {
             return $this->errorResponse(
@@ -36,7 +37,10 @@ class AdminAuthController extends ApiController
 
         $credentials = [
             'token_type' => 'Bearer',
-            'access_token' => $token
+            'access_token' => $token,
+            'sub' => Auth::user()->id,
+            'name' => Auth::user()->name,
+            'role' => Auth::user()->role
         ];
 
         return $this->dataResponse($credentials, Response::HTTP_OK);
@@ -54,6 +58,6 @@ class AdminAuthController extends ApiController
     {
         $user = Auth::user();
 
-        return (new AdminMeResource($user))->response();
+        return (new UserMeResource($user))->response();
     }
 }
