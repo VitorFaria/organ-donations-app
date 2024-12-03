@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class Patient extends Model
 {
@@ -34,6 +35,8 @@ class Patient extends Model
 
     public function organs(): BelongsToMany
     {
-        return $this->belongsToMany(Organ::class);
+        return $this->belongsToMany(Organ::class)->withTimestamps()->using(new class extends Pivot {
+            use HasUuids;
+        });
     }
 }
