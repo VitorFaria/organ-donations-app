@@ -30,7 +30,9 @@ class Patient extends Model
 
     public function hospitals(): BelongsToMany
     {
-        return $this->belongsToMany(Hospital::class);
+        return $this->belongsToMany(Hospital::class)->withTimestamps()->using(new class extends Pivot {
+            use HasUuids;
+        });
     }
 
     public function organs(): BelongsToMany
