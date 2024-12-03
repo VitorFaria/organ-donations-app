@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\Admin\AdminHospitalStoreRequest;
 use App\Http\Requests\Admin\AdminHospitalUpdateRequest;
-use App\Http\Resources\Admin\AdminHospitalResource;
+use App\Http\Resources\Hospital\HospitalResource;
 use App\Repositories\HospitalRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -20,7 +20,7 @@ class AdminHospitalController extends ApiController
     {
         $hospitals = $this->hospitalRepository->findAll();
 
-        return AdminHospitalResource::collection($hospitals);
+        return HospitalResource::collection($hospitals);
     }
 
     /**
@@ -37,7 +37,7 @@ class AdminHospitalController extends ApiController
         }
 
         $hospital = $this->hospitalRepository->getData();
-        return (new AdminHospitalResource($hospital->load('address')))->response();
+        return (new HospitalResource($hospital->load('address')))->response();
     }
 
     /**
@@ -54,7 +54,7 @@ class AdminHospitalController extends ApiController
             );
         }
 
-        return (new AdminHospitalResource($hospital->load('address')))->response();
+        return (new HospitalResource($hospital->load('address')))->response();
     }
 
     /**
@@ -72,6 +72,6 @@ class AdminHospitalController extends ApiController
         }
      
         $hospital = $this->hospitalRepository->getData();
-        return (new AdminHospitalResource($hospital->load('address')))->response();
+        return (new HospitalResource($hospital->load('address')))->response();
     }
 }
