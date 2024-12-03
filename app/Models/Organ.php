@@ -13,7 +13,8 @@ class Organ extends Model
 
     protected $fillable = [
         'name',
-        'organ_type'
+        'organ_type',
+        'slug'
     ];
 
     public function patients(): BelongsToMany

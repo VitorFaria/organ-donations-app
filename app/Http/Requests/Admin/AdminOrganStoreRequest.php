@@ -28,7 +28,8 @@ class AdminOrganStoreRequest extends FormRequest
             'organ_type' => [
                 'required',
                 new Enum(OrganType::class)
-            ]
+            ],
+            'slug' => 'nullable|string|min:3|max:200'
         ];
     }
 

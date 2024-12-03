@@ -36,6 +36,7 @@ class AdminOrganUpdateRequest extends FormRequest
                 'sometimes',
                 new Enum(OrganType::class)
             ],
+            'slug' => 'sometimes|string|min:3|max:200'
         ];
     }
 
