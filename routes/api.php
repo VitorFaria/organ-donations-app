@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AddressController;
-use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,6 +24,9 @@ Route::prefix('auth')->group(function() {
 });
 
 Route::middleware('auth:sanctum')->group(function() {
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('me', [AuthController::class, 'me']);
+
     Route::prefix('addresses')->group(function() {
         Route::get('', [AddressController::class, 'index']);
         Route::get('/{id}', [AddressController::class, 'show']);
