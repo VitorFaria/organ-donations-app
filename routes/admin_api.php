@@ -37,12 +37,5 @@ Route::middleware('auth:sanctum')->group(function() {
       Route::post('', [AdminHospitalController::class, 'store']);
       Route::patch('/{id}', [AdminHospitalController::class, 'update']);
     });
-
-    Route::prefix('users')->group(function() {
-      Route::get('', [AdminUserController::class, 'index']);
-      Route::get('/{id}', [AdminUserController::class, 'show']);
-      Route::post('', [AdminUserController::class, 'store']);
-      Route::patch('/{id}', [AdminUserController::class, 'update']);
-    });
   });
 });
