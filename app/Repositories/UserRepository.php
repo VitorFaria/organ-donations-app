@@ -44,7 +44,6 @@ class UserRepository extends BaseRepository
       if (empty($user)) return;
 
       $userArr = [];
-      $patientArr = [];
       if (!empty($data['name']))
         $userArr['name'] = $data['name'];
 
