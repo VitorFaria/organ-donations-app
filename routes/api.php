@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\HospitalController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,9 +29,14 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('me', [AuthController::class, 'me']);
 
     Route::prefix('addresses')->group(function() {
-        Route::get('', [AddressController::class, 'index']);
         Route::get('/{id}', [AddressController::class, 'show']);
         Route::post('', [AddressController::class, 'store']);
         Route::patch('/{id}', [AddressController::class, 'update']);
+    });
+
+    Route::prefix('hospitals')->group(function() {
+        Route::get('/', [HospitalController::class, 'index']);
+        Route::get('/{id}', [HospitalController::class, 'show']);
+        Route::post('choose-hospitals', [HospitalController::class, 'chooseHospitals']);
     });
 });
