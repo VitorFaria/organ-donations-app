@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\AddressController;
+use App\Http\Controllers\Api\Admin\AdminUserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HospitalController;
+use App\Http\Controllers\Api\OrganController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,5 +40,16 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('/', [HospitalController::class, 'index']);
         Route::get('/{id}', [HospitalController::class, 'show']);
         Route::post('choose-hospitals', [HospitalController::class, 'chooseHospitals']);
+    });
+
+    Route::prefix('organs')->group(function() {
+        Route::post('choose-organs', [OrganController::class, 'chooseOrgans']);
+    });
+
+    Route::prefix('users')->group(function() {
+        Route::get('', [AdminUserController::class, 'index']);
+        Route::get('/{id}', [AdminUserController::class, 'show']);
+        Route::post('', [AdminUserController::class, 'store']);
+        Route::patch('/{id}', [AdminUserController::class, 'update']);
     });
 });
