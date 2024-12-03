@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Admin\AdminUserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HospitalController;
 use App\Http\Controllers\Api\OrganController;
+use App\Http\Controllers\Api\PatientController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,4 +53,6 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('', [AdminUserController::class, 'store']);
         Route::patch('/{id}', [AdminUserController::class, 'update']);
     });
+
+    Route::get('patient-details', [PatientController::class, 'details']);
 });
