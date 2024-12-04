@@ -7,6 +7,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserMeResource extends JsonResource
 {
+    private $patientId;
+
+    public function __construct($resource, $patientId)
+    {
+        parent::__construct($resource);
+        $this->resource = $resource;
+
+        $this->patientId = $patientId;
+    }
     /**
      * Transform the resource into an array.
      *
@@ -15,6 +24,8 @@ class UserMeResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
+            'patientId' =>  $this->patientId,
             'name' => $this->name,
             'email' => $this->email,
             'role' => $this->role,

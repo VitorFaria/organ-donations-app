@@ -56,7 +56,8 @@ class AuthController extends ApiController
     public function me(): JsonResponse
     {
         $user = Auth::user();
-
-        return (new UserMeResource($user))->response();
+        $patient = $user->patient()->first();
+        $patientId = !empty($patient) ? $patient->id : null;
+        return (new UserMeResource($user,$patientId))->response();
     }
 }
