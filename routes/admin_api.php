@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\AddressController;
-use App\Http\Controllers\Api\Admin\AdminAuthController;
 use App\Http\Controllers\Api\Admin\AdminHospitalController;
 use App\Http\Controllers\Api\Admin\AdminOrganController;
 use App\Http\Middleware\CheckRoleBeforeAction;
@@ -11,9 +10,6 @@ Route::middleware('auth:sanctum')->group(function() {
   Route::middleware([CheckRoleBeforeAction::class])->group(function() {
     Route::prefix('addresses')->group(function() {
       Route::get('', [AddressController::class, 'index']);
-      Route::get('/{id}', [AddressController::class, 'show']);
-      Route::post('', [AddressController::class, 'store']);
-      Route::patch('/{id}', [AddressController::class, 'update']);
     });
 
     Route::prefix('organs')->group(function() {
