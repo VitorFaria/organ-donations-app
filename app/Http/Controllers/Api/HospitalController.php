@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\HospitalChooseRequest;
+use App\Http\Resources\Hospital\HospitalDetailsResource;
 use App\Http\Resources\Hospital\HospitalResource;
 use App\Http\Resources\Patient\PatientHospitalResource;
 use App\Repositories\HospitalRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class HospitalController extends ApiController
@@ -37,17 +39,15 @@ class HospitalController extends ApiController
         return (new PatientHospitalResource($patient->load('user', 'hospitals')))->response();
     }
 
-    public function show(string $id): JsonResponse
+    public function getHospitalInfo(string $id, Request $request): JsonResponse
     {
-        $hospital = $this->hospitalRepository->findHospital($id);
+        $type = $request->get('type', null);
+        $data = $this->hospitalRepository->getHospitalByIdAndType($id, $type);
 
-        if (!$this->hospitalRepository->getStatus()) {
-            return $this->errorResponse(
-                $this->hospitalRepository->getErrorMessage(),
-                $this->hospitalRepository->getStatusCode()
-            );
-        }
-
-        return (new HospitalResource($hospital->load('address')))->response();
+        return (new HospitalDetailsResource(
+            $data['hospital']->load('address'), 
+            $data['patients'],
+            $data['keyType'])
+        )->response();
     }
 }
