@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function() {
       Route::get('', [AdminHospitalController::class, 'index']);
       Route::get('/{id}', [AdminHospitalController::class, 'show']);
       Route::post('', [AdminHospitalController::class, 'store']);
+      Route::post('assign-patient', [AdminHospitalController::class, 'assignOrRemoveHospitalsToUser']);
       Route::patch('/{id}', [AdminHospitalController::class, 'update']);
     });
   });
