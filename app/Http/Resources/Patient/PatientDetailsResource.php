@@ -3,7 +3,7 @@
 namespace App\Http\Resources\Patient;
 
 use App\Http\Resources\Address\AddressResource;
-use App\Http\Resources\User\UserMeResource;
+use App\Http\Resources\User\UserDetailsResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -11,14 +11,17 @@ class PatientDetailsResource extends JsonResource
 {
     private $patient;
 
+    private $address;
+
     private $hasOrgansSelected;
 
-    public function __construct($resource, $patient,$hasOrgansSelected)
+    public function __construct($resource, $patient, $address, $hasOrgansSelected)
     {
         parent::__construct($resource);
         $this->resource = $resource;
 
         $this->patient = $patient;
+        $this->address = $address;
         $this->hasOrgansSelected = $hasOrgansSelected;
     }
 
@@ -30,9 +33,9 @@ class PatientDetailsResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'user' => new UserMeResource($this),
+            'user' => new UserDetailsResource($this),
             'patient' => new PatientOrganDetailResource($this->patient, $this->patient->organs),
-            'address' => new AddressResource($this->whenLoaded('address')),
+            'address' => new AddressResource($this->address),
             'hasOrgansSelected' => $this->hasOrgansSelected
         ];
     }
