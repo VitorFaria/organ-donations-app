@@ -8,17 +8,17 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class HospitalDetailsResource extends JsonResource
 {
-    private $patient;
+    private $donors;
 
-    private $keyType;
+    private $recipients;
 
-    public function __construct($resource, $patient, $keyType)
+    public function __construct($resource, $donors, $recipients)
     {
         parent::__construct($resource);
         $this->resource = $resource;
 
-        $this->patient = $patient;
-        $this->keyType = $keyType;
+        $this->donors = $donors;
+        $this->recipients = $recipients;
     }
     /**
      * Transform the resource into an array.
@@ -27,15 +27,10 @@ class HospitalDetailsResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        if (!empty($this->keyType)) {
-            return [
-                'hospital' => new HospitalResource($this),
-                $this->keyType => PatientOrganHospitalDetails::collection($this->patient)
-            ];
-        }
-
         return [
             'hospital' => new HospitalResource($this),
+            'donors' => PatientOrganHospitalDetails::collection($this->donors),
+            'recipients' => PatientOrganHospitalDetails::collection($this->recipients)
         ];
     }
 }
