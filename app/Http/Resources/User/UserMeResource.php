@@ -7,15 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserMeResource extends JsonResource
 {
-    private $patientId;
-
-    public function __construct($resource, $patientId)
-    {
-        parent::__construct($resource);
-        $this->resource = $resource;
-
-        $this->patientId = $patientId;
-    }
     /**
      * Transform the resource into an array.
      *

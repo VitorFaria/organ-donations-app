@@ -57,7 +57,8 @@ class AuthController extends ApiController
     {
         $user = Auth::user();
         $patient = $user->patient()->first();
-        $patientId = !empty($patient) ? $patient->id : null;
-        return (new UserMeResource($user,$patientId))->response();
+        $user['patientId'] = !empty($patient) ? $patient->id : null;
+
+        return (new UserMeResource($user))->response();
     }
 }
