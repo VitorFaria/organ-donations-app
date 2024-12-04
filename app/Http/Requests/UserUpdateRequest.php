@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests;
 
 use App\Enums\PatientType;
 use App\Enums\Role;
 use App\Rules\BloodTypeRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
-class AdminUserStoreRequest extends FormRequest
+class UserUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,13 +27,17 @@ class AdminUserStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:1|max:100',
-            'email' => 'required|email|unique:users,email',
+            'name' => 'sometimes|string|min:1|max:100',
+            'email' => [
+                'sometimes', 
+                'email',
+                Rule::unique('users')->ignore($this->id, 'id')
+            ],
             'role' => [
-                'required',
+                'sometimes',
                 new Enum(Role::class)
             ],
-            'password' => 'required|string|min:8',
+            'password' => 'sometimes|string|min:8',
             'patient_type' => [
                 'required_if:role,user',
                 new Enum(PatientType::class)

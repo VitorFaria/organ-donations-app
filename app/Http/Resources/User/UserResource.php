@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Resources\Admin;
+namespace App\Http\Resources\User;
 
 use App\Http\Resources\Organ\OrganResource;
 use App\Http\Resources\Patient\PatientResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AdminUserResource extends JsonResource
+class UserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

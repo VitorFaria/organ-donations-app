@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api;
 
 use App\Enums\Role;
 use App\Http\Controllers\ApiController;
-use App\Http\Requests\Admin\AdminUserStoreRequest;
-use App\Http\Requests\Admin\AdminUserUpdateRequest;
-use App\Http\Resources\Admin\AdminUserResource;
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\User\UserResource;
 use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class AdminUserController extends ApiController
+class UserController extends ApiController
 {
     public function __construct(private UserRepository $userRepository){}
     /**
@@ -21,15 +21,15 @@ class AdminUserController extends ApiController
     {
         $users = $this->userRepository->findAll();
 
-        return AdminUserResource::collection($users);
+        return UserResource::collection($users);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AdminUserStoreRequest $request): JsonResponse
+    public function registerUser(UserStoreRequest $request): JsonResponse
     {
-        $this->userRepository->storeUserByAdmin($request->validated());
+        $this->userRepository->storeUser($request->validated());
 
         if (!$this->userRepository->getStatus()) {
             return $this->errorResponse(
@@ -43,7 +43,7 @@ class AdminUserController extends ApiController
             $data = $data->load('patient.organs');
         }
 
-        return (new AdminUserResource($data))->response();
+        return (new UserResource($data))->response();
     }
 
     /**
@@ -60,15 +60,15 @@ class AdminUserController extends ApiController
             );
         }
 
-        return (new AdminUserResource($user->load('patient')))->response();
+        return (new UserResource($user->load('patient')))->response();
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(AdminUserUpdateRequest $request, string $id): JsonResponse
+    public function update(UserUpdateRequest $request, string $id): JsonResponse
     {
-        $this->userRepository->updateUserByAdmin($id, $request->validated());
+        $this->userRepository->updateUser($id, $request->validated());
 
         if (!$this->userRepository->getStatus()) {
             return $this->errorResponse(
@@ -82,6 +82,6 @@ class AdminUserController extends ApiController
             $data = $data->load('patient.organs');
         }
 
-        return (new AdminUserResource($data))->response();
+        return (new UserResource($data))->response();
     }
 }
