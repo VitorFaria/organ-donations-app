@@ -97,24 +97,35 @@ class HospitalRepository extends BaseRepository
     return $hospital;
   }
 
-  public function getHospitalByIdAndType(string $id, string|null $type)
+  public function getHospitalById(string $id): array|null
   {
     $hospital = $this->findHospital($id);
 
-    $key = null;
-    $data = null;
-    if (!empty($type)) {
-      $key = $type == PatientType::DONOR->value ? 'donors' : 'recipients';
-      $data = Patient::with('organs', 'hospitals')->where('patient_type', $type)
-      ->whereHas('hospitals', function($query) use ($id) {
-        $query->where('hospitals.id', $id);
-      })->get();
+    if (empty($hospital)) {
+      $this->setStatus(false);
+      $this->setStatusCode(Response::HTTP_NOT_FOUND);
+      $this->setErrorMessage("Hospital não encontrado para visualização");
+
+      return null;
     }
+
+    $this->setStatus(true);
+    $donors = null;
+    $recipients = null;
+    $donors = Patient::with('organs')->where('patient_type', PatientType::DONOR->value)
+    ->whereHas('hospitals', function($query) use ($id) {
+      $query->where('hospitals.id', $id);
+    })->get();
+
+    $recipients = Patient::with('organs')->where('patient_type', PatientType::RECIPIENT->value)
+    ->whereHas('hospitals', function($query) use ($id) {
+      $query->where('hospitals.id', $id);
+    })->get();
 
     return [
       'hospital' => $hospital,
-      'patients' => $data,
-      'keyType'  => $key
+      'donors'   => $donors,
+      'recipients' => $recipients
     ];
   }
 
