@@ -1,11 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\AddressController;
-use App\Http\Controllers\Api\Admin\AdminUserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HospitalController;
 use App\Http\Controllers\Api\OrganController;
 use App\Http\Controllers\Api\PatientController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +22,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function(){
     return 'ok';
 });
+
+
+Route::post('users', [UserController::class, 'registerUser']);
 
 Route::prefix('auth')->group(function() {
     Route::post('login', [AuthController::class, 'login'])->name('login');
@@ -48,10 +51,9 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::prefix('users')->group(function() {
-        Route::get('', [AdminUserController::class, 'index']);
-        Route::get('/{id}', [AdminUserController::class, 'show']);
-        Route::post('', [AdminUserController::class, 'store']);
-        Route::patch('/{id}', [AdminUserController::class, 'update']);
+        Route::get('', [UserController::class, 'index']);
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::patch('/{id}', [UserController::class, 'update']);
     });
 
     Route::get('patient-details', [PatientController::class, 'details']);
