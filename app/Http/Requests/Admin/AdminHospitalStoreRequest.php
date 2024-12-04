@@ -22,7 +22,14 @@ class AdminHospitalStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address_id' => 'required|exists:addresses,id',
+            'address_id' => 'nullable|exists:addresses,id',
+            'zip_code' => 'required_without:address_id|string|size:8',
+            'street' => 'required_without:address_id|string|min:5|max:100',
+            'neighbourhood' => 'required_without:address_id|string|min:5|max:100',
+            'state' => 'required_without:address_id|string|size:2',
+            'city' => 'required_without:address_id|string|min:5|max:100',
+            'house_number' => 'required_without:address_id|string|min:1|max:100',
+            'complement' => 'nullable|string|min:3|max:100',
             'name' => 'required|string|min:5|max:100',
             'phone' => 'required|string|max:11',
             'email' => 'required|email',
@@ -43,19 +50,44 @@ class AdminHospitalStoreRequest extends FormRequest
             'unique' => 'Documento já utilizado',
             'size' => 'Este campo deve conter exatamente :size caracteres',
             'boolean' => 'Este campo deve ser verdadeiro ou falso',
+            'required_if' => 'O campo :attribute é obrigatório quando a :other é do tipo Usuário',
+            'required_without' => 'O campo :attribute é obrigatório quando o campo address_id não está presente'
         ];
     }
 
     public function prepareForValidation(): void
     {
         $sanitizedDocument = str_replace(['.', '-', '/'], '', $this->company_document);
+        $status = $this->status && $this->status === 'true' ? true : false;
 
-        $fieldsToMerge = [
-            'company_document' => $sanitizedDocument,
-            'status' => $this->status && $this->status === 'true' ? true : false,
-        ];
-        $this->merge([
-            isset($this->status) ? $fieldsToMerge : $fieldsToMerge['company_document'],
-        ]);
+        if (isset($this->status)) {
+            if (!empty($this->zip_code)) {
+                $zipCodeWithoutHyphen = str_replace('-', '', $this->zip_code);
+                $this->merge([
+                    'company_document' => $sanitizedDocument,
+                    'status' => $status,
+                    'zip_code' => $zipCodeWithoutHyphen
+                ]);
+            }
+            else {
+                $this->merge([
+                    'company_document' => $sanitizedDocument,
+                    'status' => $status,
+                ]);
+            }
+        }
+        else {
+            if (!empty($this->zip_code)) {
+                $zipCodeWithoutHyphen = str_replace('-', '', $this->zip_code);
+                $this->merge([
+                    'company_document' => $sanitizedDocument,
+                    'zip_code' => $zipCodeWithoutHyphen
+                ]);
+            } else {
+                $this->merge([
+                    'company_document' => $sanitizedDocument
+                ]);
+            }
+        }
     }
 }
