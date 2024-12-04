@@ -11,13 +11,21 @@ class PatientController extends ApiController
 {
     public function __construct(private PatientRepository $patientRepository){}
 
-    public function details(): JsonResponse
+    public function details(string $id): JsonResponse
     {
-        $details = $this->patientRepository->patientDetails();
+        $details = $this->patientRepository->patientDetails($id);
+
+        if (!$this->patientRepository->getStatus()) {
+            return $this->errorResponse(
+                $this->patientRepository->getErrorMessage(),
+                $this->patientRepository->getStatusCode()
+            );
+        }
 
         return (new PatientDetailsResource(
-            $details['user'],
-            $details['patient']->load('address'),
+            $details['patient']['user'],
+            $details['patient'],
+            $details['patient']['address'],
             $details['hasOrgansSelected']
         ))->response();
     }
