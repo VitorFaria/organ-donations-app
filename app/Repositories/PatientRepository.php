@@ -4,25 +4,32 @@ namespace App\Repositories;
 
 use App\Models\Patient;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
 
 class PatientRepository extends BaseRepository
 {
-  public function patientDetails(): array
+  public function patientDetails(string $id): ?array
   {
-    $user = Auth::user();
-    $patient = $user->patient()->first();
+    $patient = Patient::with('user', 'address')->find($id);
+
+    if (empty($patient)) {
+      $this->setStatus(false);
+      $this->setErrorMessage("Usuário não encontrado");
+      $this->setStatusCode(Response::HTTP_NOT_FOUND);
+
+      return null;
+    }
+
+    $this->setStatus(true);
 
     $hasOrgansSelected = false;
-    if (!empty($patient)) {
-      $organs = $patient->organs()->get();
-      $patient['organs'] = $organs;
-      $hasOrgansSelected = $organs->count() > 0;
-    }
-    
+    $organs = $patient->organs()->get();
+    $patient['organs'] = $organs;
+    $hasOrgansSelected = $organs->count() > 0;
+
     return [
-      'user' => $user,
       'patient' => $patient,
+      'address' => $patient['address'],
       'hasOrgansSelected' => $hasOrgansSelected
     ];
   }
