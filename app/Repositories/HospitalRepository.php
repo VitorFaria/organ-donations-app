@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\PatientType;
 use App\Models\Hospital;
 use App\Models\Patient;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -80,6 +81,27 @@ class HospitalRepository extends BaseRepository
 
     $this->setStatus(true);
     return $hospital;
+  }
+
+  public function getHospitalByIdAndType(string $id, string|null $type)
+  {
+    $hospital = $this->findHospital($id);
+
+    $key = null;
+    $data = null;
+    if (!empty($type)) {
+      $key = $type == PatientType::DONOR->value ? 'donors' : 'recipients';
+      $data = Patient::with('organs', 'hospitals')->where('patient_type', $type)
+      ->whereHas('hospitals', function($query) use ($id) {
+        $query->where('hospitals.id', $id);
+      })->get();
+    }
+
+    return [
+      'hospital' => $hospital,
+      'patients' => $data,
+      'keyType'  => $key
+    ];
   }
 
   public function update(string $id, array $data): void
