@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\ApiController;
+use App\Http\Requests\Admin\AdminHospitalAssignRequest;
 use App\Http\Requests\Admin\AdminHospitalStoreRequest;
 use App\Http\Requests\Admin\AdminHospitalUpdateRequest;
 use App\Http\Resources\Hospital\HospitalResource;
@@ -73,5 +74,22 @@ class AdminHospitalController extends ApiController
      
         $hospital = $this->hospitalRepository->getData();
         return (new HospitalResource($hospital->load('address')))->response();
+    }
+
+    public function assignOrRemoveHospitalsToUser(AdminHospitalAssignRequest $request)
+    {
+        $this->hospitalRepository->assignOrRemoveHospitalsToUser($request->validated());
+
+        if (!$this->hospitalRepository->getStatus()) {
+            return $this->errorResponse(
+                $this->hospitalRepository->getErrorMessage(),
+                $this->hospitalRepository->getStatusCode()
+            );
+        }
+
+        return $this->successResponse(
+            $this->hospitalRepository->getSuccessMessage(),
+            $this->hospitalRepository->getStatusCode()
+        );
     }
 }
