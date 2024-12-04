@@ -29,6 +29,7 @@ class AddressStoreRequest extends FormRequest
             'city' => 'required|string|min:5|max:100',
             'house_number' => 'required|string|min:1|max:100',
             'complement' => 'nullable|string|min:3|max:100',
+            'user_id' => 'nullable|string|exists:users,id'
         ];
     }
 
@@ -40,6 +41,7 @@ class AddressStoreRequest extends FormRequest
             'min' => 'Este campo deve conter no mínimo :min caracteres',
             'max' => 'Este campo deve conter no máximo :max caracteres',
             'size' => 'Este campo deve conter exatamente :size caracteres',
+            'exists' => 'Valor inválido ou inexistente'
         ];
     }
 
