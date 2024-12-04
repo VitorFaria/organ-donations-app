@@ -56,5 +56,5 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::patch('/{id}', [UserController::class, 'update']);
     });
 
-    Route::get('patient-details', [PatientController::class, 'details']);
+    Route::get('patient-details/{id}', [PatientController::class, 'details']);
 });
