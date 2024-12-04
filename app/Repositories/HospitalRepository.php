@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class HospitalRepository extends BaseRepository
 {
-  public function __construct(private AddressRepository $addressRepository){}
+  public function __construct(
+    private AddressRepository $addressRepository,
+    private PatientRepository $patientRepository
+  ){}
 
   public function store(array $data): void
   {
@@ -155,7 +158,7 @@ class HospitalRepository extends BaseRepository
     } catch (\Exception $e) {
       $this->setStatus(false);
       $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
-      $this->setErrorMessage("Não foi selecionar os hospitais.");
+      $this->setErrorMessage("Não foi possível selecionar os hospitais.");
     }
   }
 
@@ -172,6 +175,22 @@ class HospitalRepository extends BaseRepository
     }
 
     return $patient;
+  }
+
+  public function assignOrRemoveHospitalsToUser(array $data)
+  {
+    try {
+      $patient = $this->patientRepository->getPatient($data['patient_id']);
+      $patient = $this->attachDetachItems($patient, $data['hospitals']);
+
+      $this->setStatus(true);
+      $this->setStatusCode(Response::HTTP_CREATED);
+      $this->setSuccessMessage("Hospitais atribuídos/removidos com sucesso.");
+    } catch (\Exception $e) {
+      $this->setStatus(false);
+      $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+      $this->setErrorMessage("Não foi possível atribuir paciente a este hospital.");
+    }
   }
 
   private function mountAddressPayload(array $payload): array
