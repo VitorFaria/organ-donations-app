@@ -12,13 +12,15 @@ use Illuminate\Support\Facades\DB;
 
 class AddressRepository extends BaseRepository
 {
+  public function __construct(private UserRepository $userRepository){}
+
   public function store(array $data): void
   {
     DB::beginTransaction();
     try {
       $address = $this->insertAddress($data);
-
-      $this->checkRoleBeforeAttachingAddress(Auth::user(), $address->id);
+      $user = $this->getUser($data);
+      $this->checkRoleBeforeAttachingAddress($user, $address->id);
 
       $this->setStatus(true);
       $this->setData($address);
@@ -55,6 +57,9 @@ class AddressRepository extends BaseRepository
       $address = $this->findAddress($id);
       if (empty($address)) return;
 
+      $user = $this->getUser($data);
+      $this->checkRoleBeforeAttachingAddress($user, $address->id);
+
       $address->fill($data);
       $address->save();
 
@@ -79,33 +84,28 @@ class AddressRepository extends BaseRepository
 
   public function findAddress(string $id): ?Address
   {
-    $user = Auth::user();
+    $address = Address::find($id);
 
-    if ($user->role == Role::USER->value) {
-      $patientAddress = $user->patient()->first()->address()->first();
+    if (empty($address)) {
+      $this->setStatus(false);
+      $this->setStatusCode(Response::HTTP_NOT_FOUND);
+      $this->setErrorMessage("Endereço não encontrado");
 
-      if (empty($patientAddress)) {
-        $this->setStatus(false);
-        $this->setStatusCode(Response::HTTP_NOT_FOUND);
-        $this->setErrorMessage("Endereço não encontrado");
-        return null;
-      }
-
-      $address = $patientAddress;
-    }
-    else {
-      $address = Address::find($id);
-  
-      if (empty($address)) {
-        $this->setStatus(false);
-        $this->setStatusCode(Response::HTTP_NOT_FOUND);
-        $this->setErrorMessage("Endereço não encontrado");
-  
-        return null;
-      }
+      return null;
     }
 
     $this->setStatus(true);
     return $address;
+  }
+
+  public function getUser(array $data): User
+  {
+    if (!empty($data['user_id'])) {
+      $user = $this->userRepository->findUser($data['user_id']);
+
+      return $user;
+    }
+
+    return Auth::user();
   }
 }
