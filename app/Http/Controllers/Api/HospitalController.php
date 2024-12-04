@@ -9,7 +9,6 @@ use App\Http\Resources\Hospital\HospitalResource;
 use App\Http\Resources\Patient\PatientHospitalResource;
 use App\Repositories\HospitalRepository;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class HospitalController extends ApiController
@@ -39,15 +38,21 @@ class HospitalController extends ApiController
         return (new PatientHospitalResource($patient->load('user', 'hospitals')))->response();
     }
 
-    public function getHospitalInfo(string $id, Request $request): JsonResponse
+    public function getHospitalInfo(string $id): JsonResponse
     {
-        $type = $request->get('type', null);
-        $data = $this->hospitalRepository->getHospitalByIdAndType($id, $type);
+        $data = $this->hospitalRepository->getHospitalById($id);
+
+        if (!$this->hospitalRepository->getStatus()) {
+            return $this->errorResponse(
+                $this->hospitalRepository->getErrorMessage(),
+                $this->hospitalRepository->getStatusCode()
+            );
+        }
 
         return (new HospitalDetailsResource(
             $data['hospital']->load('address'), 
-            $data['patients'],
-            $data['keyType'])
+            $data['donors'],
+            $data['recipients'])
         )->response();
     }
 }
