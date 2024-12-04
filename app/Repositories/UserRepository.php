@@ -14,7 +14,7 @@ class UserRepository extends BaseRepository
 {
   public function __construct(private PatientRepository $patientRepository){}
 
-  public function storeUserByAdmin(array $data): void
+  public function storeUser(array $data): void
   {
     DB::beginTransaction();
     try {
@@ -38,7 +38,7 @@ class UserRepository extends BaseRepository
     }
   }
 
-  public function updateUserByAdmin(string $id, array $data): void
+  public function updateUser(string $id, array $data): void
   {
     DB::beginTransaction();
     try {
@@ -61,7 +61,7 @@ class UserRepository extends BaseRepository
       $user->fill($userArr);
       $user->save();
 
-      $patient = $this->patientRepository->findPatient($user->id);
+      $patient = $this->patientRepository->findPatientByUserId($user->id);
 
       if (!empty($data['patient_type']))
         $patient->patient_type = $data['patient_type'];
