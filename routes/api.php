@@ -51,8 +51,8 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::prefix('users')->group(function() {
-        Route::get('', [UserController::class, 'index']);
         Route::get('/{id}', [UserController::class, 'show']);
+        Route::get('/{type?}', [UserController::class, 'listUsersByType']);
         Route::patch('/{id}', [UserController::class, 'update']);
     });
 
