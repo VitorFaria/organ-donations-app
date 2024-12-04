@@ -42,7 +42,7 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::prefix('hospitals')->group(function() {
         Route::get('/', [HospitalController::class, 'index']);
-        Route::get('/{id}/{type?}', [HospitalController::class, 'getHospitalInfo']);
+        Route::get('/{id}', [HospitalController::class, 'getHospitalInfo']);
         Route::post('choose-hospitals', [HospitalController::class, 'chooseHospitals']);
     });
 
