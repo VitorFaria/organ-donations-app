@@ -9,6 +9,7 @@ use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\User\UserResource;
 use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class UserController extends ApiController
@@ -17,9 +18,10 @@ class UserController extends ApiController
     /**
      * Display a listing of the resource.
      */
-    public function index(): AnonymousResourceCollection
+    public function listUsersByType(Request $request): AnonymousResourceCollection
     {
-        $users = $this->userRepository->findAll();
+        $type = $request->get('type', null);
+        $users = $this->userRepository->filterUserByType($type);
 
         return UserResource::collection($users);
     }
