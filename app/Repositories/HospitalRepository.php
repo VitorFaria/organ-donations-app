@@ -8,6 +8,7 @@ use App\Models\Patient;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HospitalRepository extends BaseRepository
 {
@@ -15,8 +16,15 @@ class HospitalRepository extends BaseRepository
 
   public function store(array $data): void
   {
+    DB::beginTransaction();
     try {
-      $address = $this->addressRepository->findAddress($data['address_id']);
+      if (!empty($data['address_id'])) {
+        $address = $this->addressRepository->findAddress($data['address_id']);
+      }
+      else {
+        $payload = $this->mountAddressPayload($data);
+        $address = $this->addressRepository->insertAddress($payload['address']);
+      }
       $hospitalAlreadyExists = $this->checkIfAddressIdAlreadyExists($address->id);
       
       if ($hospitalAlreadyExists)
@@ -34,7 +42,10 @@ class HospitalRepository extends BaseRepository
       $this->setStatus(true);
       $this->setData($hospital);
       $this->setStatusCode(Response::HTTP_CREATED);
+
+      DB::commit();
     } catch(\Exception $e) {
+      DB::rollBack();
       $this->setStatus(false);
       $this->setErrorMessage('Não foi possível cadastrar este hospital');
       $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -161,5 +172,20 @@ class HospitalRepository extends BaseRepository
     }
 
     return $patient;
+  }
+
+  private function mountAddressPayload(array $payload): array
+  {
+    $data['address'] = [
+      'zip_code'=> $payload['zip_code'],
+      'street'=> $payload['street'],
+      'neighbourhood' => $payload['neighbourhood'],
+      'state' => $payload['state'],
+      'city' => $payload['city'],
+      'house_number' => $payload['house_number'],
+      'complement' => $payload['complement']
+    ];
+
+    return $data;
   }
 }
