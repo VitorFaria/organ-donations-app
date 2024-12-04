@@ -27,10 +27,17 @@ class PatientRepository extends BaseRepository
     ];
   }
 
-  public function findPatient(string $userId): Patient
+  public function findPatientByUserId(string $userId): Patient
   {
     $user = User::find($userId);
     $patient = $user->patient()->first();
+
+    return $patient;
+  }
+
+  public function getPatient(string $patientId): Patient
+  {
+    $patient = Patient::find($patientId);
 
     return $patient;
   }
