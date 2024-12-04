@@ -16,9 +16,9 @@ class AddressRepository extends BaseRepository
   {
     DB::beginTransaction();
     try {
-      $address = Address::create($data);
+      $address = $this->insertAddress($data);
 
-      $this->checkBeforeBeforeAttachingAddress(Auth::user(), $address->id);
+      $this->checkRoleBeforeAttachingAddress(Auth::user(), $address->id);
 
       $this->setStatus(true);
       $this->setData($address);
@@ -33,7 +33,14 @@ class AddressRepository extends BaseRepository
     }
   }
 
-  public function checkBeforeBeforeAttachingAddress(User $user, string $addressId): void
+  public function insertAddress(array $data)
+  {
+    $address = Address::create($data);
+
+    return $address;
+  }
+
+  public function checkRoleBeforeAttachingAddress(User $user, string $addressId): void
   {
     if ($user->role == Role::USER->value) {
       $patient = $user->patient()->first();
