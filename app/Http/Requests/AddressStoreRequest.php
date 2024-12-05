@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AddressExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AddressStoreRequest extends FormRequest
@@ -22,7 +23,12 @@ class AddressStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'zip_code' => 'required|string|size:8',
+            'zip_code' => [
+                'required',
+                'string',
+                'size:8',
+                new AddressExistsRule($this)
+            ],
             'street' => 'required|string|min:5|max:100',
             'neighbourhood' => 'required|string|min:5|max:100',
             'state' => 'required|string|size:2',
