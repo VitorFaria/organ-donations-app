@@ -88,7 +88,7 @@ class OrganRepository extends BaseRepository
     } catch (\Exception $e) {
       $this->setStatus(false);
       $this->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
-      $this->setErrorMessage("Não foi selecionar os orgãos.");
+      $this->setErrorMessage("Não foi possível selecionar os orgãos.");
     }
   }
 
@@ -96,12 +96,16 @@ class OrganRepository extends BaseRepository
   {
     if (!empty($organArr['disconnect'])) {
       $disconnectItems = array_column($organArr['disconnect'], 'id');
-      $patient->organs()->sync($disconnectItems);
+      if (!in_array(null, $disconnectItems, true)) {
+        $patient->organs()->detach($disconnectItems);
+      }
     }
 
     if (!empty(['connect'])) {
       $connectItems = array_column($organArr['connect'], 'id');
-      $patient->organs()->attach($connectItems);
+      if (!in_array(null, $connectItems, true)) {
+        $patient->organs()->sync($connectItems);
+      }
     }
 
     return $patient;
