@@ -27,7 +27,6 @@ class AssignAddressRule implements ValidationRule
     {
         $oneEntityOnlyMessage = 'Apenas uma das entidades podem ser selecionadas para este endereço.';
         $addressAlreadyAssignedMessage = 'Este endereço já foi selecionado';
-        $data = $this->request->all();
 
         if (!empty($this->request->user_id) && !empty($this->request->hospital_id)) {
             $fail($oneEntityOnlyMessage);
