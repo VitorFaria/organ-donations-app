@@ -136,7 +136,7 @@ class UserRepository extends BaseRepository
       return $user;
   }
 
-  public function filterUserByType(string $type = null): LengthAwarePaginator
+  public function filterUserByType(string|null $type): LengthAwarePaginator
   {
     if (!empty($type)) {
       $users = User::where('role', 'user')
