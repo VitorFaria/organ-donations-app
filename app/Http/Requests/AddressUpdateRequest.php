@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AssignAddressRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AddressUpdateRequest extends FormRequest
@@ -29,7 +30,18 @@ class AddressUpdateRequest extends FormRequest
             'city' => 'sometimes|string|min:5|max:100',
             'house_number' => 'sometimes|string|min:1|max:100',
             'complement' => 'sometimes|string|min:3|max:100',
-            'user_id' => 'nullable|string|exists:users,id'
+            'user_id' => [
+                'nullable', 
+                'string', 
+                'exists:users,id',
+                new AssignAddressRule($this)
+            ],
+            'hospital_id' => [
+                'nullable', 
+                'string', 
+                'exists:hospitals,id',
+                new AssignAddressRule($this)  
+            ],
         ];
     }
 
