@@ -177,18 +177,22 @@ class HospitalRepository extends BaseRepository
   {
     if (!empty($hospitalArr['disconnect'])) {
       $disconnectItems = array_column($hospitalArr['disconnect'], 'id');
-      $patient->hospitals()->detach($disconnectItems);
+      if (!in_array(null, $disconnectItems, true)) {
+        $patient->hospitals()->detach($disconnectItems);
+      }
     }
 
     if (!empty(['connect'])) {
       $connectItems = array_column($hospitalArr['connect'], 'id');
-      $patient->hospitals()->attach($connectItems);
+      if (!in_array(null, $connectItems, true)) {
+        $patient->hospitals()->sync($connectItems);
+      }
     }
 
     return $patient;
   }
 
-  public function assignOrRemoveHospitalsToUser(array $data)
+  public function assignOrRemoveHospitalsToUser(array $data): void
   {
     try {
       $patient = $this->patientRepository->getPatient($data['patient_id']);
