@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Enums\Role;
 use App\Models\Address;
+use App\Models\Hospital;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Response;
@@ -51,14 +52,28 @@ class AddressRepository extends BaseRepository
     }
   }
 
+  public function attachAddressToHospital(Hospital $hospital, string $addressId): void
+  {
+    if (!empty($hospital)) {
+      $hospital->address_id = $addressId;
+      $hospital->save();
+    }
+  }
+
   public function update(string $id, array $data): void
   {
     try {
       $address = $this->findAddress($id);
       if (empty($address)) return;
 
-      $user = $this->getUser($data);
-      $this->checkRoleBeforeAttachingAddress($user, $address->id);
+      if (empty($data['user_id']) && !empty($data['hospital_id'])) {
+        $hospital = Hospital::find($data['hospital_id']);
+        $this->attachAddressToHospital($hospital, $address->id);
+      }
+      else {
+        $user = $this->getUser($data);
+        $this->checkRoleBeforeAttachingAddress($user, $address->id);
+      }
 
       $address->fill($data);
       $address->save();
