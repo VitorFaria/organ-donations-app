@@ -5,11 +5,13 @@ namespace App\Repositories;
 use App\Models\Organ;
 use App\Models\Patient;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class OrganRepository extends BaseRepository
 {
+  public function __construct(private PatientRepository $patientRepository){}
   public function findAll(): LengthAwarePaginator
   {
     $organs = Organ::orderBy('name', 'ASC')->paginate(10);
@@ -30,6 +32,26 @@ class OrganRepository extends BaseRepository
    
     $this->setStatus(true);
     return $organ;
+  }
+
+  public function listPatientOrgans(string|null $patiendId): ?Collection
+  {
+    $patient = !empty($patiendId) 
+      ? $this->patientRepository->getPatient($patiendId)
+      : Auth::user()->patient()->first();
+
+    if (empty($patient)) {
+      $this->setStatus(false);
+      $this->setStatusCode(Response::HTTP_NOT_FOUND);
+      $this->setErrorMessage("Usuário não é paciente ou não possui orgãos ainda.");
+
+      return null;
+    }
+
+    $this->setStatus(true);
+    $organs = $patient->organs()->get();
+    
+    return $organs;
   }
 
   public function store(array $data): void
