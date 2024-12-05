@@ -47,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::prefix('organs')->group(function() {
+        Route::get('patient-organs/{patientId?}', [OrganController::class, 'listPatientOrgans']);
         Route::post('choose-organs', [OrganController::class, 'chooseOrgans']);
     });
 
