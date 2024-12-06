@@ -135,9 +135,15 @@ class HospitalRepository extends BaseRepository
       $hospital = $this->findHospital($id);
       if (empty($hospital)) return;
       
-      $address = $this->addressRepository->findAddress($data['address_id']);
-      $hospital->fill($data);
-      $address->hospital()->save($hospital);
+      if (!empty($data['address_id'])) {
+        $address = $this->addressRepository->findAddress($data['address_id']);
+        $hospital->fill($data);
+        $address->hospital()->save($hospital);
+      }
+      else {
+        $hospital->fill($data);
+        $hospital->save();
+      }
 
       $this->setStatus(true);
       $this->setData($hospital);
