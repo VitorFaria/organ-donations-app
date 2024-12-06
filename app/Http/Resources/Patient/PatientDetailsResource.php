@@ -34,7 +34,11 @@ class PatientDetailsResource extends JsonResource
     {
         return [
             'user' => new UserDetailsResource($this),
-            'patient' => new PatientOrganDetailResource($this->patient, $this->patient->organs),
+            'patient' => new PatientOrganDetailResource(
+                $this->patient, 
+                $this->patient->organs,
+                $this->patient->hospitals
+            ),
             'address' => new AddressResource($this->address),
             'hasOrgansSelected' => $this->hasOrgansSelected
         ];
