@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\Role;
 use App\Http\Controllers\ApiController;
+use App\Http\Requests\FilterUserRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\User\UserResource;
 use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class UserController extends ApiController
@@ -18,10 +18,9 @@ class UserController extends ApiController
     /**
      * Display a listing of the resource.
      */
-    public function listUsersByType(Request $request): AnonymousResourceCollection
+    public function index(FilterUserRequest $request): AnonymousResourceCollection
     {
-        $type = $request->get('type', null);
-        $users = $this->userRepository->filterUserByType($type);
+        $users = $this->userRepository->filterUsers($request->validated());
 
         return UserResource::collection($users);
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\ApiController;
+use App\Http\Requests\FilterHospitalRequest;
 use App\Http\Requests\HospitalChooseRequest;
 use App\Http\Resources\Hospital\HospitalDetailsResource;
 use App\Http\Resources\Hospital\HospitalResource;
@@ -15,9 +16,9 @@ class HospitalController extends ApiController
 {
     public function __construct(private HospitalRepository $hospitalRepository){}
 
-    public function index(): JsonResource
+    public function index(FilterHospitalRequest $request): JsonResource
     {
-        $hospitals = $this->hospitalRepository->findAll();
+        $hospitals = $this->hospitalRepository->filterHospitals($request->validated());
 
         return HospitalResource::collection($hospitals);
     }
