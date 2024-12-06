@@ -26,7 +26,8 @@ class User extends Authenticatable
         'password',
         'role',
         'document',
-        'birth_date'
+        'birth_date',
+        'is_active'
     ];
 
     /**
