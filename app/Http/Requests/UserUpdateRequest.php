@@ -47,7 +47,8 @@ class UserUpdateRequest extends FormRequest
                 new BloodTypeRule()
             ],
             'organs' => 'required_if:role,user|array',
-            'organs.*.id' => 'required_if:role,user|string|exists:organs,id'
+            'organs.*.id' => 'required_if:role,user|string|exists:organs,id',
+            'is_active' => 'nullable|boolean',
         ];
     }
 
@@ -61,11 +62,23 @@ class UserUpdateRequest extends FormRequest
             'max' => 'Este campo deve conter no máximo :max caracteres',
             'unique' => 'Valor já existente', 
             'role.Illuminate\Validation\Rules\Enum' => 'Role inválida para cadastro',
-            'type.Illuminate\Validation\Rules\Enum' => 'Tipo de paciente inválida para cadastro',
+            'patient_type.Illuminate\Validation\Rules\Enum' => 'Tipo de paciente inválido para cadastro',
             'blood_type.Illuminate\Validation\Rules\Enum' => 'Tipo sanguíneo inválido para cadastro',
             'array' => 'Este campo deve ser um vetor de dados',
             'organs.*.id.exists' => 'Valor inválido ou inexistente',
-            'required_if' => 'O campo :attribute é obrigatório quando a :other é do tipo Usuário'
+            'required_if' => 'O campo :attribute é obrigatório quando a :other é do tipo Usuário',
+            'boolean' => 'Este campo deve ser verdadeiro ou falso',
         ];
+    }
+
+    public function prepareForValidation(): void
+    {
+        if (!is_null($this->is_active)) {
+            $isActive = $this->is_active 
+            && ($this->is_active === 'true' || $this->is_active === true) ? true : false;
+            $this->merge([
+                'is_active' => $isActive
+            ]);
+        }
     }
 }
