@@ -24,7 +24,9 @@ class PatientRepository extends BaseRepository
 
     $hasOrgansSelected = false;
     $organs = $patient->organs()->get();
+    $hospitals = $patient->hospitals()->with('address')->get();
     $patient['organs'] = $organs;
+    $patient['hospitals'] = $hospitals;
     $hasOrgansSelected = $organs->count() > 0;
 
     return [
