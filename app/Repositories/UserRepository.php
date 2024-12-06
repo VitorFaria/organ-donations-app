@@ -142,21 +142,28 @@ class UserRepository extends BaseRepository
       return $user;
   }
 
-  public function filterUserByType(string|null $type): LengthAwarePaginator
+  public function filterUsers(array $request): LengthAwarePaginator
   {
-    if (!empty($type)) {
-      $users = User::where('role', 'user')
-        ->whereHas('patient', function($query) use ($type) {
-          $query->where('patient_type', $type);
-        })
-        ->orderBy('name', 'ASC')
-        ->paginate(10);
+    $users = User::where('is_active', true);
+
+    if (isset($request['type'])) {
+      $users->when($request['type'])
+        ->where('is_active', true)
+        ->whereHas('patient', function($query) use ($request) {
+            $query->where('patient_type', $request['type']);
+        });
     }
-    else {
-      $users = User::where('role', 'user')
-      ->orderBy('name', 'ASC')
-      ->paginate(10);
-    }
+
+    $users->when(!empty($request['email']), function($query) use ($request) {
+      return $query->where('email', 'like', '%'.$request['email'].'%');
+    });
+
+    $users
+      ->orderBy('role', 'DESC')
+      ->orderBy('name', 'ASC');
+
+    $users = $users->paginate(10);
+    // dd($users->get());
 
     return $users;
   }

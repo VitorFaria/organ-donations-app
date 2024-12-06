@@ -71,12 +71,19 @@ class HospitalRepository extends BaseRepository
     return null;
   }
 
-  public function findAll(): LengthAwarePaginator
+  public function filterHospitals(array $request): LengthAwarePaginator
   {
     $hospitals = Hospital::where('status', true)
-      ->with('address')
-      ->orderBy('name', 'ASC')
-      ->paginate(10);
+      ->with('address');
+
+    $hospitals->when(!empty($request['name']), function($query) use ($request) {
+      return $query->where('name', 'like', '%'.$request['name'].'%');
+    });
+
+
+    $hospitals->orderBy('name', 'ASC');
+
+    $hospitals = $hospitals->paginate(10);
 
     return $hospitals;
   }
