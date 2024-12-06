@@ -58,6 +58,9 @@ class UserRepository extends BaseRepository
       if (!empty($data['role']))
         $userArr['role'] = $data['role'];
 
+      if (isset($data['is_active']))
+        $userArr['is_active'] = $data['is_active'];
+
       $user->fill($userArr);
       $user->save();
 
@@ -118,11 +121,14 @@ class UserRepository extends BaseRepository
 
   private function registerUser(array $userData): User
   {
+      $isActive = isset($userData['is_active']) ? $userData['is_active'] : true;
+
       $user = User::create([
         'name' => $userData['name'],
         'email' => $userData['email'],
         'password' => $userData['password'],
-        'role' => $userData['role']
+        'role' => $userData['role'],
+        'is_active' => $isActive
       ]);
 
       $patient = new Patient();
