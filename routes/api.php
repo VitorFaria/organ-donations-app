@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::prefix('hospitals')->group(function() {
-        Route::get('/', [HospitalController::class, 'index']);
+        Route::get('/{search?}', [HospitalController::class, 'index']);
         Route::get('/{id}', [HospitalController::class, 'getHospitalInfo']);
         Route::post('choose-hospitals', [HospitalController::class, 'chooseHospitals']);
     });
@@ -52,8 +52,8 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::prefix('users')->group(function() {
+        Route::get('/{search?}', [UserController::class, 'index']);
         Route::get('/{id}', [UserController::class, 'show']);
-        Route::get('/{type?}', [UserController::class, 'listUsersByType']);
         Route::patch('/{id}', [UserController::class, 'update']);
     });
 
