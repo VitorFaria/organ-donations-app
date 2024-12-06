@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function(){
-    return 'ok';
+    return response()->json(['status' => 'Up']);
 });
 
 
